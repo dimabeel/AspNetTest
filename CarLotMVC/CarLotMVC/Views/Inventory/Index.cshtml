@@ -1,5 +1,15 @@
 ﻿@model IEnumerable<AutoLotDAL.Models.Inventory>
 
+@using AutoLotDAL.Models;
+@functions
+{
+    public IList<Inventory> SortByPetName(IList<Inventory> cars)
+    {
+        var list = from s in cars orderby s.PetName select s;
+        return list.ToList();
+    }
+}
+
 @{
     ViewBag.Title = "Index";
 }
@@ -26,7 +36,7 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
+@foreach (var item in SortByPetName(Model.ToList())) {
     <tr>
         <td>
             @Html.DisplayFor(modelItem => item.Make)
