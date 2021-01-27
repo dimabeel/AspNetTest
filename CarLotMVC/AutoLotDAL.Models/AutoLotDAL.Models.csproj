@@ -54,6 +54,7 @@
     <Compile Include="CreditRisk.cs" />
     <Compile Include="Customer.cs" />
     <Compile Include="Inventory.cs" />
+    <Compile Include="InventoryMetaData.cs" />
     <Compile Include="InventoryPartial.cs" />
     <Compile Include="Order.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
