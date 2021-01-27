@@ -7,20 +7,15 @@
 <h2>Create</h2>
 
 
-@using (Html.BeginForm())
+using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-
-    using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
-        @Html.EditorForModel()
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-info" />
-            </div>
+    @Html.EditorForModel()
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-info" />
         </div>
-    }
+    </div>
 }
 
 <div>
