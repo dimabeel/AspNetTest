@@ -8,17 +8,18 @@ using System.Web;
 using System.Web.Mvc;
 using AutoLotDAL.EF;
 using AutoLotDAL.Models;
+using AutoLotDAL.Repos;
 
 namespace CarLotMVC.Controllers
 {
     public class InventoryController : Controller
     {
-        private AutoLotEntities db = new AutoLotEntities();
+        private InventoryRepo repo = new InventoryRepo();
 
         // GET: Inventory
         public ActionResult Index()
         {
-            return View(db.Cars.ToList());
+            return View(repo.GetAll());
         }
 
         // GET: Inventory/Details/5
@@ -28,7 +29,7 @@ namespace CarLotMVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Inventory inventory = db.Cars.Find(id);
+            Inventory inventory = repo.GetOne(id);
             if (inventory == null)
             {
                 return HttpNotFound();
@@ -47,16 +48,25 @@ namespace CarLotMVC.Controllers
         // сведения см. в разделе https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Make,Color,PetName,Timestamp")] Inventory inventory)
+        public ActionResult Create([Bind(Include = "Make, Color, PetName")] Inventory inventory)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                db.Cars.Add(inventory);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                return View(inventory);
             }
 
-            return View(inventory);
+            try
+            {
+                repo.Add(inventory);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty,
+                    $"Unable to create record: {ex.Message}");
+                return View(inventory);
+            }
+
+            return RedirectToAction("Index");
         }
 
         // GET: Inventory/Edit/5
@@ -66,7 +76,7 @@ namespace CarLotMVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Inventory inventory = db.Cars.Find(id);
+            Inventory inventory = repo.GetOne(id);
             if (inventory == null)
             {
                 return HttpNotFound();
@@ -79,15 +89,32 @@ namespace CarLotMVC.Controllers
         // сведения см. в разделе https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Make,Color,PetName,Timestamp")] Inventory inventory)
+        public ActionResult Edit([Bind(Include = "Id, Make, Color, PetName, Timestamp")] Inventory inventory)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                db.Entry(inventory).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                return View(inventory);
             }
-            return View(inventory);
+
+            try
+            {
+                repo.Save(inventory);
+            }
+            catch (DBConcurrencyException ex)
+            {
+                ModelState.AddModelError(string.Empty,
+                    $"Unable to save the record. Another user has updated" +
+                    $" it. {ex.Message}");
+                return View(inventory);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty,
+                    $"Unable to save the record. {ex.Message}");
+                return View(inventory);
+            }
+
+            return RedirectToAction("Index");
         }
 
         // GET: Inventory/Delete/5
@@ -97,7 +124,7 @@ namespace CarLotMVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Inventory inventory = db.Cars.Find(id);
+            Inventory inventory = repo.GetOne(id);
             if (inventory == null)
             {
                 return HttpNotFound();
@@ -106,13 +133,25 @@ namespace CarLotMVC.Controllers
         }
 
         // POST: Inventory/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed([Bind(Include = "Id, Timestamp")] Inventory inventory)
         {
-            Inventory inventory = db.Cars.Find(id);
-            db.Cars.Remove(inventory);
-            db.SaveChanges();
+            try
+            {
+                repo.Delete(inventory);
+            }
+            catch (DBConcurrencyException ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Unable to delete" +
+                    $"record. Another user updated the record. {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Unable to delete" +
+                    $"record: {ex.Message}");
+            }
+
             return RedirectToAction("Index");
         }
 
@@ -120,7 +159,7 @@ namespace CarLotMVC.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                repo.Dispose();
             }
             base.Dispose(disposing);
         }
