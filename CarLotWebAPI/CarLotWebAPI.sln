@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoLotDAL.Models", "AutoLotDAL.Models\AutoLotDAL.Models.csproj", "{9A917D7C-885E-4D9A-818F-9955871A4FBB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoLotDAL.Models", "..\AutoLotDAL.Models\AutoLotDAL.Models.csproj", "{9A917D7C-885E-4D9A-818F-9955871A4FBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoLotDAL", "AutoLotDAL\AutoLotDAL.csproj", "{7E5A8812-C303-4AE0-A6E7-4AC96EC11624}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoLotDAL", "..\AutoLotDAL\AutoLotDAL.csproj", "{7E5A8812-C303-4AE0-A6E7-4AC96EC11624}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatLotWebAPI", "CatLotWebAPI\CatLotWebAPI.csproj", "{05FF8165-B949-4066-A347-E94B407A9740}"
 EndProject

@@ -18,8 +18,7 @@
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
-    <IISExpressSSLPort>
-    </IISExpressSSLPort>
+    <IISExpressSSLPort>44366</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
@@ -307,16 +306,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AutoLotDAL.Models\AutoLotDAL.Models.csproj">
-      <Project>{9a917d7c-885e-4d9a-818f-9955871a4fbb}</Project>
-      <Name>AutoLotDAL.Models</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\AutoLotDAL\AutoLotDAL.csproj">
-      <Project>{7e5a8812-c303-4ae0-a6e7-4ac96ec11624}</Project>
-      <Name>AutoLotDAL</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
