@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AutoLotDAL.TestDriver
+namespace AutoLotDALCore.TestDriver
 {
     class Program
     {

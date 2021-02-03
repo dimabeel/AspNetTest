@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AutoLotDAL.Models
+namespace AutoLotDALCore.Models
 {
     class InventoryMetaData
     {

@@ -1,5 +1,5 @@
 ﻿using System;
-using AutoLotDAL.Models;
+using AutoLotDALCore.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 

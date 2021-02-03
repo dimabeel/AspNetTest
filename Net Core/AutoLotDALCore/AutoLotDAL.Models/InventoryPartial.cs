@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AutoLotDAL.Models
+namespace AutoLotDALCore.Models
 {
 	[ModelMetadataType(typeof(InventoryMetaData))]
 	public partial class Inventory
