@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace AutoLotDALCore.Repos
 {
-    class BaseRepo<T> : IDisposable, IRepo<T> where T:EntityBase, new()
+    public class BaseRepo<T> : IDisposable, IRepo<T> where T:EntityBase, new()
     {
         public BaseRepo() : this(new AutoLotContext())
         {
@@ -68,26 +68,38 @@ namespace AutoLotDALCore.Repos
             {
                 return context.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException _)
+            catch (DbUpdateConcurrencyException)
             {
                 // Parallelism err
                 throw;
             }
-            catch (RetryLimitExceededException _)
+            catch (RetryLimitExceededException)
             {
                 // Max attempts count
                 throw;
             }
-            catch (DbUpdateException _)
+            catch (DbUpdateException)
             {
                 // Err during update DB.
                 throw;
             }
-            catch (Exception _)
+            catch (Exception)
             {
                 // Another one exception
                 throw;
             }
+        }
+
+        // TODO: Make right method
+        public List<T> ExecuteQuery(string query)
+        {
+            return new List<T>();
+        }
+
+        // TODO: Make right method
+        public List<T> ExecuteQuery(string query, object[] parameters)
+        {
+            return new List<T>();
         }
 
         public void Dispose()
