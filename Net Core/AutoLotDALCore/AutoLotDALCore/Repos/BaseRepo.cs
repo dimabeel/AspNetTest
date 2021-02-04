@@ -90,17 +90,11 @@ namespace AutoLotDALCore.Repos
             }
         }
 
-        // TODO: Make right method
-        public List<T> ExecuteQuery(string query)
-        {
-            return new List<T>();
-        }
+        public List<T> ExecuteQuery(string sql) => table.FromSqlRaw(sql)
+            .ToList();
 
-        // TODO: Make right method
-        public List<T> ExecuteQuery(string query, object[] parameters)
-        {
-            return new List<T>();
-        }
+        public List<T> ExecuteQuery(string sql, object[] sqlParametersObjects)
+            => table.FromSqlRaw(sql, sqlParametersObjects).ToList();
 
         public void Dispose()
         {
