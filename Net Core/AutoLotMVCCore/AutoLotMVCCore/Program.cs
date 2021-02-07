@@ -1,11 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using AutoLotDALCore.DataInitialization;
+using AutoLotDALCore.EF;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoLotMVCCore
 {
@@ -13,7 +10,15 @@ namespace AutoLotMVCCore
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var webHost = CreateHostBuilder(args).Build();
+            using (var scope = webHost.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var context = services.GetRequiredService<AutoLotContext>();
+                MyDataInitializer.RecreateDataBase(context);
+                MyDataInitializer.InitializeData(context);
+            }
+            webHost.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

@@ -3,7 +3,7 @@ using AutoLotDALCore.Models;
 
 namespace AutoLotDALCore.Repos
 {
-    interface IInventoryRepo : IRepo<Inventory>
+    public interface IInventoryRepo : IRepo<Inventory>
     {
         List<Inventory> Search(string searchString);
 

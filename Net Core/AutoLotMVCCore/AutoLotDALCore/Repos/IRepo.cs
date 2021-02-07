@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace AutoLotDALCore.Repos
 {
-    interface IRepo<T>
+    public interface IRepo<T>
     {
         int Add(T entity);
 

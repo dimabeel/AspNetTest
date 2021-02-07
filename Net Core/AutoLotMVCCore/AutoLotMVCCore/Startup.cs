@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using AutoLotDALCore.EF;
+using AutoLotDALCore.Repos;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace AutoLotMVCCore
 {
@@ -23,6 +23,13 @@ namespace AutoLotMVCCore
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            
+            services.AddDbContextPool<AutoLotContext>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("AutoLot"),
+            o => o.EnableRetryOnFailure())
+            .ConfigureWarnings(warn => warn.Throw(
+                RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning)));
+            services.AddScoped<IInventoryRepo, InventoryRepo>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +51,10 @@ namespace AutoLotMVCCore
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllerRoute("Contact", "Contact/{*pathInfo}",
+                    new { controller = "Home", action = "Contact" });
+                endpoints.MapControllerRoute("About", "About/{*pathInfo}",
+                    new { controller = "Home", action = "About" });
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
