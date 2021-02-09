@@ -1,40 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using AutoLotDALCore.EF;
+using AutoLotDALCore.Repos;
 using AutoLotDALCore.Models;
 
 namespace AutoLotMVCCore.Controllers
 {
     public class InventoryController : Controller
     {
-        private readonly AutoLotContext _context;
+        private readonly IInventoryRepo repo;
 
-        public InventoryController(AutoLotContext context)
+        public InventoryController(IInventoryRepo repo)
         {
-            _context = context;
+            this.repo = repo;
         }
 
         // GET: Inventory
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Cars.ToListAsync());
+            return View(repo.GetAll());
         }
 
         // GET: Inventory/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            var inventory = await _context.Cars
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var inventory = repo.GetOne(id);
             if (inventory == null)
             {
                 return NotFound();
@@ -54,30 +50,41 @@ namespace AutoLotMVCCore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Make,Color,PetName,Id,Timestamp")] Inventory inventory)
+        public IActionResult Create([Bind("Make,Color,PetName")] Inventory inventory)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(inventory);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return View(inventory);
             }
-            return View(inventory);
+
+            try
+            {
+                repo.Add(inventory);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty,
+                    $@"Unable to create record: {ex.Message}");
+                return View(inventory);
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Inventory/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            var inventory = await _context.Cars.FindAsync(id);
+            var inventory = repo.GetOne(id);
             if (inventory == null)
             {
                 return NotFound();
             }
+
             return View(inventory);
         }
 
@@ -86,46 +93,47 @@ namespace AutoLotMVCCore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Make,Color,PetName,Id,Timestamp")] Inventory inventory)
+        public IActionResult Edit(int id, [Bind("Make,Color,PetName,Id,Timestamp")] Inventory inventory)
         {
             if (id != inventory.Id)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(inventory);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!InventoryExists(inventory.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return View(inventory);
             }
-            return View(inventory);
+
+            try
+            {
+                repo.Update(inventory);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                ModelState.AddModelError(string.Empty,
+                    $@"Unable to save the record. Another user has update it. {ex.Message}");
+                return View(inventory);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty,
+                    $@"Unable to save the record. {ex.Message}");
+                return View(inventory);
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Inventory/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            var inventory = await _context.Cars
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var inventory = repo.GetOne(id);
             if (inventory == null)
             {
                 return NotFound();
@@ -135,19 +143,26 @@ namespace AutoLotMVCCore.Controllers
         }
 
         // POST: Inventory/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult Delete([Bind("Id, Timestamp")] Inventory inventory)
         {
-            var inventory = await _context.Cars.FindAsync(id);
-            _context.Cars.Remove(inventory);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            try
+            {
+                repo.Delete(inventory);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                ModelState.AddModelError(string.Empty,
+                    $@"Unable to delete the record. Another user has updated the record: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty,
+                    $@"Unable to delete the record. {ex.Message}");
+            }
 
-        private bool InventoryExists(int id)
-        {
-            return _context.Cars.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
