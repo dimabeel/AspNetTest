@@ -27,6 +27,7 @@ namespace AutoLotAPICore.Controllers
             var mapperConfig = new MapperConfiguration(
                 cfg => cfg.CreateMap<Inventory, Inventory>()
                 .ForMember(x => x.Orders, opt => opt.Ignore()));
+            mapper = new Mapper(mapperConfig);
         }
 
         // GET: api/Inventory

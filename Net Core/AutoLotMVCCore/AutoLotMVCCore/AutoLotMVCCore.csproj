@@ -29,6 +29,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AutoLotDAL.Models\AutoLotDAL.Models.csproj" />
-    <ProjectReference Include="..\AutoLotDALCore\AutoLotDALCore.csproj" />
   </ItemGroup>
 </Project>

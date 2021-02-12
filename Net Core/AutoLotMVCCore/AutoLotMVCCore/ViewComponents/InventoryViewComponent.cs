@@ -1,28 +1,35 @@
-﻿using System.Threading.Tasks;
-using AutoLotDALCore.Repos;
+﻿using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
+using AutoLotDALCore.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace AutoLotMVCCore.ViewComponents
 {
     public class InventoryViewComponent : ViewComponent
     {
-        private readonly IInventoryRepo repo;
+        private readonly string baseUrl;
         
-        public InventoryViewComponent(IInventoryRepo repo)
+        public InventoryViewComponent(IConfiguration configuration)
         {
-            this.repo = repo;
+            baseUrl = configuration.GetSection("ServiceAddress").Value;
         }
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var cars = repo.GetAll(x => x.Make, true);
-            if (cars != null)
+            var client = new HttpClient();
+            var response = await client.GetAsync($"{baseUrl}");
+            if (response.IsSuccessStatusCode)
             {
-                return View("InventoryPartialView", cars);
+                var items = JsonConvert.DeserializeObject<List<Inventory>>(
+                    await response.Content.ReadAsStringAsync());
+                return View("InventoryPartialView", items);
             }
 
-            return new ContentViewComponentResult("Unable to locate records.");
+            return new ContentViewComponentResult("Unable to return records.");
         }
     }
 }
